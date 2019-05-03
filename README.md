@@ -1,4 +1,4 @@
-# StoreCertificateSigner
+# Description
 Create a signature using non-exportable private key in Windows certificate store.
 
 This repo allows to create a cryptographic signature of the provided hash using the private key associated with the certificate that is located in Windows certificate store. The most important part is that the private key is "non-exportable", thus it is not retrieved by the code but only a context to the private key is found and used for signing. 
