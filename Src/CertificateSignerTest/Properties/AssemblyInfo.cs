@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NEnrollment.CertificateSigner.Test")]
+[assembly: AssemblyTitle("CertificateSignerTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("NEnrollment.CertificateSigner.Test")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("CertificateSignerTest")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
