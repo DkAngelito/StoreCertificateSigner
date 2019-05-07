@@ -10,11 +10,14 @@ namespace PksSigner
     /// <summary>
     /// Signer that accesses private key store (PKS) and signs without exporting the private key explicitly
     /// </summary>
-    internal class PksEcdsaSigner : ECDsaSigner
+    internal class PksEcdsaSigner : IDsa
     {
         private PksEcPrivateKey _privateKey; // used for signing
+        private ECDsaSigner _verifier;
 
-        public override void Init(bool forSigning, ICipherParameters parameters)
+        public virtual string AlgorithmName => "ECDSA";
+
+        public virtual void Init(bool forSigning, ICipherParameters parameters)
         {
             SecureRandom providedRandom = null;
 
@@ -26,19 +29,17 @@ namespace PksSigner
                     parameters = rParam.Parameters;
                 }
 
-                _privateKey = parameters as PksEcPrivateKey ?? 
+                _privateKey = parameters as PksEcPrivateKey ??
                               throw new InvalidKeyException("EC private key required for signing");
             }
             else
             {
-                key = parameters as ECPublicKeyParameters ??
-                           throw new InvalidKeyException("EC public key required for verification");
+                _verifier = new ECDsaSigner();
+                _verifier.Init(false, parameters);
             }
-
-            random = InitSecureRandom(forSigning && !kCalculator.IsDeterministic, providedRandom);
         }
 
-        public override BigInteger[] GenerateSignature(byte[] message)
+        public virtual BigInteger[] GenerateSignature(byte[] message)
         {
             var signer = new CertificateSigner.SignerWrapper();
 
@@ -64,5 +65,21 @@ namespace PksSigner
 
             return new[] { r, s };
         }
+
+        public bool VerifySignature(byte[] message, BigInteger r, BigInteger s)
+        {
+            if (_verifier == null) throw new NotImplementedException();
+
+            return _verifier.VerifySignature(message, r, s);
+        }
+
+        // Does not exist in BC 1.8.3.1, only after ver 1.8.4, which is defined in IDsaExt, 
+        // and implemented in ECDsaSigner. GenerateSignature fails if key==null in BC ver 1.8.4 and up
+        // if we derive this class from ECDsaSigner :
+        //
+        // public override BigInteger Order
+        // {
+        //     get { return key?.Parameters.N; }
+        // }
     }
 }
